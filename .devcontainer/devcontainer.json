@@ -12,7 +12,7 @@
 //    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },
-  "postCreateCommand": "cp .env.dev .env && make install",
+  "postCreateCommand": "cp .env.dev .env",
   "customizations": {
     "vscode": {
       "extensions": [
