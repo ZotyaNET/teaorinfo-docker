@@ -47,6 +47,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       intl \
       opcache \
       zip \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
     && rm -rf /tmp/* \
     && rm -rf /var/list/apt/* \
     && rm -rf /var/lib/apt/lists/* \
@@ -90,7 +92,7 @@ COPY ./composer.json $APP_HOME/composer.json
 
 COPY ./package.json $APP_HOME/package.json
 RUN apt-get update
-RUN apt-get -y install curl gnupg default-mysql-client
+RUN apt-get -y install curl gnupg default-mysql-client mongodb-clients
 RUN curl -sL https://deb.nodesource.com/setup_20.x  | bash -
 RUN apt-get -y install nodejs
 RUN npm install -g yarn
