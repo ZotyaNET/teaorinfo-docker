@@ -2,7 +2,7 @@
   "name": "Laravel Dev Container",
   "remoteUser": "vscode",
   "runArgs": ["--memory=4g", "--cpus=2"],
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "../",
   "forwardPorts": [
     8000, 3306, 5173
   ],
