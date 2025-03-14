@@ -1,7 +1,7 @@
 {
   "name": "Laravel Dev Container",
-  "dockerFile": "Dockerfile",
-  "workspaceFolder": "/workspace",
+  "dockerFile": "../Dockerfile",
+  "workspaceFolder": "../",
   "forwardPorts": [
     8000, 3306, 5173
   ],
