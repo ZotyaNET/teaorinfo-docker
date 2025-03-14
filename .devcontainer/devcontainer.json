@@ -1,13 +1,15 @@
 {
   "name": "Laravel Dev Container",
-  "dockerFile": "../Dockerfile",
-  "workspaceFolder": "../",
+  "dockerFile": "Dockerfile",
+  "workspaceFolder": "/workspace",
   "forwardPorts": [
     8000, 3306, 5173
   ],
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
   ],
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/php:1": {
@@ -19,13 +21,7 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
     },
-    "ghcr.io/devcontainers/features/mysql:1": {
-      "version": "latest",
-      "database": "laravel",
-      "user": "root",
-      "password": "root"
-    },
-    "ghcr.io/devcontainers/features/redis:1": {}
+    "ghcr.io/devcontainers/features/common-utils:2": {}
   },
   "customizations": {
     "vscode": {
