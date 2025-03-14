@@ -92,7 +92,7 @@ COPY ./composer.json $APP_HOME/composer.json
 
 COPY ./package.json $APP_HOME/package.json
 RUN apt-get update
-RUN apt-get -y install curl gnupg default-mysql-client mongodb-clients
+RUN apt-get -y install curl gnupg default-mysql-client
 RUN curl -sL https://deb.nodesource.com/setup_20.x  | bash -
 RUN apt-get -y install nodejs
 RUN npm install -g yarn
