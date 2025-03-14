@@ -1,18 +1,19 @@
 {
   "name": "Laravel Dev Container",
-  "workspaceFolder": "../",
+  "remoteUser": "vscode",
+  "runArgs": ["--memory=4g", "--cpus=2"],
+  "workspaceFolder": "/workspace",
   "forwardPorts": [
     8000, 3306, 5173
   ],
   "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
   ],
   "features": {
-//    "ghcr.io/devcontainers/features/git:1": {},
-//    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/common-utils:2": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/git:1": {}
   },
-  "postCreateCommand": "cp .env.dev .env",
   "customizations": {
     "vscode": {
       "extensions": [
