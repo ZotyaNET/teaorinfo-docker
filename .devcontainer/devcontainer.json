@@ -1,6 +1,5 @@
 {
   "name": "Laravel Dev Container",
-  "dockerFile": "../Dockerfile",
   "workspaceFolder": "../",
   "forwardPorts": [
     8000, 3306, 5173
@@ -8,21 +7,12 @@
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
   ],
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/php:1": {
-      "version": "latest",
-      "installComposer": true,
-      "installXdebug": true,
-      "installPHPUnit": true
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "lts"
-    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },
+  "postCreateCommand": "make install",
   "customizations": {
     "vscode": {
       "extensions": [
