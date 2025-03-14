@@ -1,0 +1,51 @@
+{
+  "name": "Laravel Dev Container",
+  "dockerFile": "Dockerfile",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [
+    8000, 3306, 5173
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/php:1": {
+      "version": "latest",
+      "installComposer": true,
+      "installXdebug": true,
+      "installPHPUnit": true
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/mysql:1": {
+      "version": "latest",
+      "database": "laravel",
+      "user": "root",
+      "password": "root"
+    },
+    "ghcr.io/devcontainers/features/redis:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-tslint-plugin",
+        "ms-azuretools.vscode-docker",
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        "mikestead.dotenv",
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "editor.formatOnSave": true,
+        "files.associations": {
+          "*.blade.php": "html"
+        }
+      }
+    }
+  }
+}
