@@ -1,4 +1,4 @@
-export COMPOSE_PROJECT_NAME=teaorinfo
+export COMPOSE_PROJECT_NAME=nace
 export WEB_PORT_HTTP=80
 export WEB_PORT_SSL=443
 export XDEBUG_CONFIG=main
