@@ -1,8 +1,8 @@
 {
-    "name": "carsalesforyou/laravel",
+    "name": "nace/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["crawler", "scraper", "laravel", "framework"],
+    "description": "The skeleton application for the Nace Laravel framework.",
+    "keywords": ["nace", "crawler", "scraper", "laravel", "framework"],
     "license": "MIT",
     "require": {
         "php": "^8.3.6",
@@ -74,6 +74,6 @@
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
