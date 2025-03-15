@@ -2,7 +2,7 @@
   "name": "Laravel Dev Container",
   "dockerFile": "../Dockerfile",
   "remoteUser": "vscode",
-  "runArgs": ["--memory=16gb", "--cpus=8", "--network=bridge"],
+
   "workspaceFolder": "/workspaces/teaorinfo-docker",
   "forwardPorts": [
     8000, 3306, 5173, 80, 443, 6379, 1025, 8025, 3000, 27017
@@ -11,8 +11,6 @@
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
   ],
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/common-utils:2": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "customizations": {
