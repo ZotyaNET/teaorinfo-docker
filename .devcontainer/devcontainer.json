@@ -3,7 +3,7 @@
   "dockerFile": "../Dockerfile",
   "remoteUser": "vscode",
   "runArgs": ["--memory=16gb", "--cpus=8", "--network=bridge"],
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/teaorinfo-docker",
   "forwardPorts": [
     8000, 3306, 5173, 80, 443, 6379, 1025, 8025, 3000, 27017
   ],
