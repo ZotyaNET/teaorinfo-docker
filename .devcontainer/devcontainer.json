@@ -10,7 +10,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },
-  "postCreateCommand": "cp /workspaces/teaorinfo-docker/.env.dev /workspaces/teaorinfo-docker/.env && make install",
+  "postCreateCommand": "make install",
   "customizations": {
     "vscode": {
       "extensions": [
