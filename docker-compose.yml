@@ -120,7 +120,7 @@ services:
         ports:
             - "${MONGO_PORT:-27017}:27017"
         volumes:
-            - ./storage/mongodb-dev-data:/data/db
+            - ./storage/mongo-dev-data:/data/db
         networks:
             - laravel
         environment:
@@ -130,6 +130,3 @@ services:
 networks:
     laravel:
         name: laravel
-volumes:
-    laravel-redis:
-        driver: local
