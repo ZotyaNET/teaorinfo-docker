@@ -1,6 +1,6 @@
 {
   "name": "Remote Dev Container",
-  "dockerFile": "../Dockerfile",
+  "dockerFile": "Dockerfile",
   "remoteUser": "www-data",
   "workspaceFolder": "/workspaces/teaorinfo-docker",
   "mounts": [

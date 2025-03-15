@@ -3,17 +3,17 @@ services:
     nginx:
         image: ${COMPOSE_PROJECT_NAME}-nginx:latest
         build:
-            context: ./docker/
+            context: docker
             args:
-                BUILD_ARGUMENT_ENV: test
-            dockerfile: ./nginx/Dockerfile
+                BUILD_ARGUMENT_ENV: prod
+            dockerfile: docker/nginx/Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-nginx
         restart: always
         ports:
             - "${WEB_PORT_HTTP}:80"
             - "${WEB_PORT_SSL}:443"
         volumes:
-            - ./:/var/www/html:rw,cached
+            - ./:/var/www/html:ro,cached
         depends_on:
             - laravel
         networks:
@@ -22,16 +22,16 @@ services:
     laravel: &laravel-template
         image: ${COMPOSE_PROJECT_NAME}-laravel:latest
         build:
-            context: .
+            context: ..
             args:
-                BUILD_ARGUMENT_ENV: test
+                BUILD_ARGUMENT_ENV: prod
                 HOST_UID: ${HOST_UID}
                 HOST_GID: ${HOST_GID}
-                XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-            dockerfile: ./Dockerfile
+            dockerfile: ../Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-laravel
+        restart: always
         volumes:
-            - ./.git:/var/www/html/.git:cached
+          - ./:/var/www/html:cached
         depends_on:
             - mysql
         networks:
@@ -47,17 +47,16 @@ services:
     mysql:
         image: mysql:${MYSQL_VERSION}
         container_name: ${COMPOSE_PROJECT_NAME}-mysql
+        restart: always
         command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
             MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
-        ports:
-            - "3306:3306"
         volumes:
-            - ./storage/mysql-test-data:/var/lib/mysql:delegated
-            - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+            - ./storage/mysql-prod-data:/var/lib/mysql:delegated
         networks:
             - laravel
 
@@ -67,26 +66,17 @@ services:
       ports:
         - '${FORWARD_REDIS_PORT:-6379}:6379'
       volumes:
-        - ./storage/redis-test-data:/data
+        - ./storage/redis-prod-data:/data
       networks:
         - laravel
+      healthcheck:
+        test:
+          - CMD
+          - redis-cli
+          - ping
+        retries: 3
+        timeout: 5s
 
-    chrome:
-      image: 'browserless/chrome:latest'
-      container_name: ${COMPOSE_PROJECT_NAME}-chrome
-      ports:
-        - '3000:3000'
-      networks:
-        - laravel
-
-    scrapy:
-      image: 'badouralix/python-scrapy:latest'
-      build:
-        context: .
-        dockerfile: ./docker/scrapy/Dockerfile
-      container_name: ${COMPOSE_PROJECT_NAME}-scrapy
-      networks:
-        - laravel
 
 networks:
     laravel:
