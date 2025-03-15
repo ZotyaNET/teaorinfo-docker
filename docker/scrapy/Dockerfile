@@ -2,7 +2,7 @@
 FROM badouralix/python-scrapy
 
 # Set the working directory inside the container
-WORKDIR /crawler_code
+WORKDIR /crawlers
 
 # Copy the requirements file into the container
 COPY ./docker/scrapy/requirements.txt .
@@ -17,4 +17,4 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       telnet
 
 # Define the default command to run when the container starts
-#CMD scrapy runspider /crawler_code/cs4u/spiders/hahu.py
+#CMD scrapy runspider /crawler/cs4u/spiders/hahu.py
