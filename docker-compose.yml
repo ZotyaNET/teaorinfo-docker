@@ -13,7 +13,7 @@ services:
             - "${WEB_PORT_HTTP}:80"
             - "${WEB_PORT_SSL}:443"
         volumes:
-            - ./laravel:/var/www/html:ro,cached
+            - ./laravel:/var/www/html:rw,cached
         depends_on:
             - laravel
         networks:
@@ -21,7 +21,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -48,7 +48,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -88,7 +88,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -110,10 +110,14 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -128,10 +132,12 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - laravel
+        depends_on:
+            - mysql
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -144,10 +150,14 @@ services:
             - '3000:3000'
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -164,7 +174,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -179,13 +189,17 @@ services:
             - ./.storage/mongo-dev-data:/data/db
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         environment:
             MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
             MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -206,6 +220,10 @@ services:
             - './docker/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         healthcheck:
             test:
                 - CMD
@@ -220,7 +238,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -230,7 +248,7 @@ services:
         image: 'mariadb:latest'
         container_name: ${COMPOSE_PROJECT_NAME}-mariadb
         ports:
-            - '${FORWARD_DB_PORT:-33060}:3306'
+            - '33060:3306'
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
@@ -243,6 +261,10 @@ services:
             - './docker/database/mariadb/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         healthcheck:
             test:
                 - CMD
@@ -254,7 +276,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -267,10 +289,14 @@ services:
             - '${FORWARD_MEMCACHED_PORT:-11211}:11211'
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -289,6 +315,10 @@ services:
             - './.storage/typesense-dev-data:/typesense-data'
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         healthcheck:
             test:
                 - CMD
@@ -301,7 +331,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -320,6 +350,10 @@ services:
             - './.storage/minio-dev-data:/data'
         networks:
             - laravel
+        depends_on:
+            - mysql
+            - nginx
+            - mail
         command: 'minio server /data --console-address ":8900"'
         healthcheck:
             test:
@@ -332,7 +366,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -350,7 +384,7 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
@@ -370,10 +404,12 @@ services:
             - '${PUSHER_METRICS_PORT:-9601}:9601'
         networks:
             - laravel
+        depends_on:
+            - minio
         deploy:
             resources:
                 limits:
-                    cpus: '1'
+                    cpus: '0.5'
                     memory: 1G
                 reservations:
                     cpus: '0.05'
