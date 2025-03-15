@@ -11,7 +11,7 @@ COPY ./docker/scrapy/requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the entire project directory into the container
-COPY ./scrapy .
+COPY ./crawler/scrapy .
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       telnet
