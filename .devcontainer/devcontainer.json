@@ -2,7 +2,7 @@
   "name": "Remote Dev Container",
   "dockerFile": "Dockerfile",
   "remoteUser": "www-data",
-  "workspaceFolder": "/workspaces/teaorinfo-docker",
+  "workspaceFolder": "/workspace",
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
   ],
