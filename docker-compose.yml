@@ -112,7 +112,6 @@ services:
             timeout: 5s
         depends_on:
             - mysql
-            - nginx
             - mail
         deploy:
             resources:
@@ -132,8 +131,6 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - laravel
-        depends_on:
-            - mysql
         deploy:
             resources:
                 limits:
@@ -150,10 +147,6 @@ services:
             - '3000:3000'
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         deploy:
             resources:
                 limits:
@@ -189,10 +182,6 @@ services:
             - ./.storage/mongo-dev-data:/data/db
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         environment:
             MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
             MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -220,10 +209,6 @@ services:
             - './docker/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         healthcheck:
             test:
                 - CMD
@@ -261,10 +246,6 @@ services:
             - './docker/database/mariadb/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         healthcheck:
             test:
                 - CMD
@@ -289,10 +270,6 @@ services:
             - '${FORWARD_MEMCACHED_PORT:-11211}:11211'
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         deploy:
             resources:
                 limits:
@@ -315,10 +292,6 @@ services:
             - './.storage/typesense-dev-data:/typesense-data'
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         healthcheck:
             test:
                 - CMD
@@ -350,10 +323,6 @@ services:
             - './.storage/minio-dev-data:/data'
         networks:
             - laravel
-        depends_on:
-            - mysql
-            - nginx
-            - mail
         command: 'minio server /data --console-address ":8900"'
         healthcheck:
             test:
@@ -404,8 +373,6 @@ services:
             - '${PUSHER_METRICS_PORT:-9601}:9601'
         networks:
             - laravel
-        depends_on:
-            - minio
         deploy:
             resources:
                 limits:
