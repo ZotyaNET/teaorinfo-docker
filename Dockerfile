@@ -88,9 +88,9 @@ RUN chmod 0600 /var/spool/cron/crontabs/root
 
 # set working directory
 WORKDIR $APP_HOME
-COPY ./composer.json $APP_HOME/composer.json
+#COPY ./laravel/composer.json $APP_HOME/composer.json
 
-COPY ./package.json $APP_HOME/package.json
+#COPY ./laravel/package.json $APP_HOME/package.json
 RUN apt-get update
 RUN apt-get -y install curl gnupg default-mysql-client
 RUN curl -sL https://deb.nodesource.com/setup_20.x  | bash -
@@ -105,8 +105,8 @@ COPY --chown=${USERNAME}:${USERNAME} . $APP_HOME/
 COPY --chown=${USERNAME}:${USERNAME} .env.$ENV $APP_HOME/.env
 
 # install all PHP dependencies
-RUN if [ "$BUILD_ARGUMENT_ENV" = "dev" ] || [ "$BUILD_ARGUMENT_ENV" = "test" ]; then COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress; \
-    else COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress --no-dev; \
-    fi
+#RUN if [ "$BUILD_ARGUMENT_ENV" = "dev" ] || [ "$BUILD_ARGUMENT_ENV" = "test" ]; then COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress; \
+#    else COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress --no-dev; \
+#    fi
 
 USER root
