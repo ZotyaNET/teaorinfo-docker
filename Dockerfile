@@ -88,13 +88,15 @@ RUN chmod 0600 /var/spool/cron/crontabs/root
 
 # set working directory
 WORKDIR $APP_HOME
+#COPY ./laravel/composer.json $APP_HOME/composer.json
 
+#COPY ./laravel/package.json $APP_HOME/package.json
 RUN apt-get update
 RUN apt-get -y install curl gnupg default-mysql-client
 RUN curl -sL https://deb.nodesource.com/setup_20.x  | bash -
 RUN apt-get -y install nodejs
 RUN npm install -g yarn
-
+RUN yarn install
 
 USER ${USERNAME}
 
@@ -103,15 +105,8 @@ COPY --chown=${USERNAME}:${USERNAME} . $APP_HOME/
 COPY --chown=${USERNAME}:${USERNAME} .env.$ENV $APP_HOME/.env
 
 # install all PHP dependencies
-RUN if [ -f "./laravel/package.json" ]; then cp ./laravel/package.json $APP_HOME/package.json; fi
-RUN if [ -f "$APP_HOME/package.json" ]; then yarn install; fi
-RUN if [ -f "./laravel/composer.json" ]; then cp ./laravel/composer.json $APP_HOME/composer.json; fi
-RUN if [ -f "$APP_HOME/composer.json" ]; then \
-    if [ "$BUILD_ARGUMENT_ENV" = "dev" ] || [ "$BUILD_ARGUMENT_ENV" = "test" ]; then \
-        COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress; \
-    else \
-        COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress --no-dev; \
-    fi \
-fi
+#RUN if [ "$BUILD_ARGUMENT_ENV" = "dev" ] || [ "$BUILD_ARGUMENT_ENV" = "test" ]; then COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress; \
+#    else COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress --no-dev; \
+#    fi
 
 USER root
