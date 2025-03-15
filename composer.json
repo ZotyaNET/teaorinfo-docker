@@ -1,0 +1,26 @@
+{
+    "name": "nace/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Nace Laravel framework.",
+    "keywords": ["nace", "crawler", "scraper", "laravel", "framework"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.3.6"
+    },
+    "require-dev": {
+        "phpcsstandards/phpcsutils": "^1.0",
+        "phpunit/phpunit": "^11.0.1"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
