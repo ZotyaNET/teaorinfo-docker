@@ -2,7 +2,7 @@
   "name": "Laravel Dev Container",
   "dockerFile": "../Dockerfile",
   "remoteUser": "vscode",
-  "runArgs": ["--memory=8gb", "--cpus=4", '--network=bridge'],
+  "runArgs": ["--memory=16gb", "--cpus=8", '--network=bridge'],
   "workspaceFolder": "/workspace",
   "forwardPorts": [
     8000, 3306, 5173, 80, 443, 6379, 1025, 8025, 3000, 27017
@@ -15,7 +15,6 @@
     "ghcr.io/devcontainers/features/common-utils:2": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-//  "postCreateCommand": "make build",
   "customizations": {
     "vscode": {
       "extensions": [
