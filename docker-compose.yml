@@ -73,7 +73,7 @@ services:
         ports:
             - "${DB_PORT}:${DB_PORT}"
         volumes:
-            - ./storage/mysql-dev-data:/var/lib/mysql:delegated
+            - ./.storage/mysql-dev-data:/var/lib/mysql:delegated
             - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
         networks:
             - laravel
@@ -100,7 +100,7 @@ services:
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
-            - ./storage/redis-dev-data:/data
+            - ./.storage/redis-dev-data:/data
         networks:
             - laravel
         healthcheck:
@@ -176,7 +176,7 @@ services:
         ports:
             - "${MONGO_PORT:-27017}:27017"
         volumes:
-            - ./storage/mongo-dev-data:/data/db
+            - ./.storage/mongo-dev-data:/data/db
         networks:
             - laravel
         environment:

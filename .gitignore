@@ -14,4 +14,4 @@ public/build
 resources/data/teaors/*.json
 .idea/laravel-idea.xml
 
-storage/*
+.storage/*
