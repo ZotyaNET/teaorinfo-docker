@@ -5,7 +5,7 @@
   "hostRequirements": {
     "cpus": 8,
     "memory": "32gb",
-    "storage": "32gb"
+    "storage": "64gb"
   },
   "workspaceFolder": "/workspaces/teaorinfo-docker",
   "forwardPorts": [
