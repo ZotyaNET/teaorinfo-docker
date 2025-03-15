@@ -1,8 +1,12 @@
 {
-  "name": "Laravel Dev Container",
+  "name": "Remote Dev Container",
   "dockerFile": "../Dockerfile",
   "remoteUser": "vscode",
-
+  "hostRequirements": {
+    "cpus": 8,
+    "memory": "32gb",
+    "storage": "32gb"
+  },
   "workspaceFolder": "/workspaces/teaorinfo-docker",
   "forwardPorts": [
     8000, 3306, 5173, 80, 443, 6379, 1025, 8025, 3000, 27017
