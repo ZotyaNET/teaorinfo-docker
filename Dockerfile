@@ -70,6 +70,16 @@ COPY docker/general/do_we_need_xdebug.sh /tmp/
 COPY docker/dev/xdebug-${XDEBUG_CONFIG}.ini /tmp/xdebug.ini
 RUN chmod u+x /tmp/do_we_need_xdebug.sh && /tmp/do_we_need_xdebug.sh
 
+# copy source files and config files
+#COPY --chown=${USERNAME}:${USERNAME} .devcontainer $APP_HOME/
+COPY --chown=${USERNAME}:${USERNAME} .env.$ENV $APP_HOME/.env
+
+# add supervisor
+RUN mkdir -p /var/log/supervisor
+COPY --chown=root:root docker/general/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --chown=root:crontab docker/general/cron /var/spool/cron/crontabs/root
+RUN chmod 0600 /var/spool/cron/crontabs/root
+
 # Install the Redis extension using pecl
 RUN pecl install redis \
 # enable it using ext
@@ -79,12 +89,6 @@ RUN pecl install redis \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN chmod +x /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
-
-# add supervisor
-RUN mkdir -p /var/log/supervisor
-COPY --chown=root:root docker/general/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY --chown=root:crontab docker/general/cron /var/spool/cron/crontabs/root
-RUN chmod 0600 /var/spool/cron/crontabs/root
 
 # set working directory
 WORKDIR $APP_HOME
@@ -99,10 +103,6 @@ RUN npm install -g yarn
 RUN yarn install
 
 USER ${USERNAME}
-
-# copy source files and config file
-#COPY --chown=${USERNAME}:${USERNAME} .devcontainer $APP_HOME/
-COPY --chown=${USERNAME}:${USERNAME} ./.env.$ENV $APP_HOME/.env
 
 # install all PHP dependencies
 #RUN if [ "$BUILD_ARGUMENT_ENV" = "dev" ] || [ "$BUILD_ARGUMENT_ENV" = "test" ]; then COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress; \
