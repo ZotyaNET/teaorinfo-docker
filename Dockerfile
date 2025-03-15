@@ -62,12 +62,12 @@ RUN mkdir -p $APP_HOME/public && \
     && chown -R ${USERNAME}:${USERNAME} $APP_HOME
 
 # put php config for Laravel
-COPY ./docker/$BUILD_ARGUMENT_ENV/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY ./docker/$BUILD_ARGUMENT_ENV/php.ini /usr/local/etc/php/php.ini
+COPY docker/$BUILD_ARGUMENT_ENV/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/$BUILD_ARGUMENT_ENV/php.ini /usr/local/etc/php/php.ini
 
 # install Xdebug in case dev/test environment
-COPY ./docker/general/do_we_need_xdebug.sh /tmp/
-COPY ./docker/dev/xdebug-${XDEBUG_CONFIG}.ini /tmp/xdebug.ini
+COPY docker/general/do_we_need_xdebug.sh /tmp/
+COPY docker/dev/xdebug-${XDEBUG_CONFIG}.ini /tmp/xdebug.ini
 RUN chmod u+x /tmp/do_we_need_xdebug.sh && /tmp/do_we_need_xdebug.sh
 
 # Install the Redis extension using pecl
@@ -82,8 +82,8 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # add supervisor
 RUN mkdir -p /var/log/supervisor
-COPY --chown=root:root ./docker/general/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY --chown=root:crontab ./docker/general/cron /var/spool/cron/crontabs/root
+COPY --chown=root:root docker/general/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --chown=root:crontab docker/general/cron /var/spool/cron/crontabs/root
 RUN chmod 0600 /var/spool/cron/crontabs/root
 
 # set working directory
@@ -101,8 +101,8 @@ RUN yarn install
 USER ${USERNAME}
 
 # copy source files and config file
-COPY --chown=${USERNAME}:${USERNAME} . $APP_HOME/
-COPY --chown=${USERNAME}:${USERNAME} .env.$ENV $APP_HOME/.env
+#COPY --chown=${USERNAME}:${USERNAME} .devcontainer $APP_HOME/
+COPY --chown=${USERNAME}:${USERNAME} ./.env.$ENV $APP_HOME/.env
 
 # install all PHP dependencies
 #RUN if [ "$BUILD_ARGUMENT_ENV" = "dev" ] || [ "$BUILD_ARGUMENT_ENV" = "test" ]; then COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress; \

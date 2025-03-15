@@ -3,9 +3,9 @@ services:
     nginx:
         image: ${COMPOSE_PROJECT_NAME}-nginx:latest
         build:
-            context: docker
+            context: ../docker
             args:
-                BUILD_ARGUMENT_ENV: staging
+                BUILD_ARGUMENT_ENV: prod
             dockerfile: docker/nginx/Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-nginx
         restart: always
@@ -24,12 +24,14 @@ services:
         build:
             context: ..
             args:
-                BUILD_ARGUMENT_ENV: staging
+                BUILD_ARGUMENT_ENV: prod
                 HOST_UID: ${HOST_UID}
                 HOST_GID: ${HOST_GID}
             dockerfile: ../Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-laravel
         restart: always
+        volumes:
+          - ./:/var/www/html:cached
         depends_on:
             - mysql
         networks:
@@ -54,7 +56,7 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - ./storage/mysql-staging-data:/var/lib/mysql:delegated
+            - ./storage/mysql-prod-data:/var/lib/mysql:delegated
         networks:
             - laravel
 
@@ -64,7 +66,7 @@ services:
       ports:
         - '${FORWARD_REDIS_PORT:-6379}:6379'
       volumes:
-        - ./storage/redis-staging-data:/data
+        - ./storage/redis-prod-data:/data
       networks:
         - laravel
       healthcheck:
@@ -75,22 +77,6 @@ services:
         retries: 3
         timeout: 5s
 
-    chrome:
-      image: 'browserless/chrome:latest'
-      container_name: ${COMPOSE_PROJECT_NAME}-chrome
-      ports:
-        - '3000:3000'
-      networks:
-        - laravel
-
-    scrapy:
-      image: 'badouralix/python-scrapy:latest'
-      build:
-        context: ..
-        dockerfile: docker/scrapy/Dockerfile
-      container_name: ${COMPOSE_PROJECT_NAME}-scrapy
-      networks:
-        - laravel
 
 networks:
     laravel:
