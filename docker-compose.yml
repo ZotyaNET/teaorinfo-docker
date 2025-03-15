@@ -18,6 +18,14 @@ services:
             - laravel
         networks:
             - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     laravel: &laravel-template
         image: ${COMPOSE_PROJECT_NAME}-laravel:latest
@@ -37,6 +45,14 @@ services:
             - mail
         networks:
             - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     ### Cron tasks
     supervisord:
@@ -69,6 +85,14 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     redis:
         image: 'redis:alpine'
@@ -86,6 +110,14 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     mail:
         image: axllent/mailpit:latest
@@ -96,6 +128,14 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     chrome:
         image: 'browserless/chrome:latest'
@@ -104,6 +144,14 @@ services:
             - '3000:3000'
         networks:
             - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     scrapy:
         image: 'badouralix/python-scrapy:latest'
@@ -113,6 +161,14 @@ services:
         container_name: ${COMPOSE_PROJECT_NAME}-scrapy
         networks:
             - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
     mongodb:
         image: mongo:latest
@@ -126,6 +182,14 @@ services:
         environment:
             MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
             MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
 
 networks:
     laravel:

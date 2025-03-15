@@ -1,5 +1,6 @@
 {
   "name": "Laravel Dev Container",
+  "dockerFile": "../Dockerfile",
   "remoteUser": "vscode",
   "runArgs": ["--memory=4gb", "--cpus=2", '--network=bridge'],
   "workspaceFolder": "/workspace/teaorinfo-docker",
