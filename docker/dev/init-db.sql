@@ -1,2 +1,2 @@
 # create testing database
-CREATE DATABASE IF NOT EXISTS `db_testing`;
+CREATE DATABASE IF NOT EXISTS `testing`;

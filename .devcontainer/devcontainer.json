@@ -4,12 +4,13 @@
   "remoteUser": "www-data",
   "workspaceFolder": "/workspaces/teaorinfo-docker",
   "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   ],
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {}
   },
+  "postCreateCommand": "sudo cp /workspaces/teaorinfo-docker/.env.dev /workspaces/teaorinfo-docker/.env && sudo make install",
   "customizations": {
     "vscode": {
       "extensions": [

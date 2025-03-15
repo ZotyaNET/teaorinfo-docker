@@ -3,10 +3,10 @@ services:
     nginx:
         image: ${COMPOSE_PROJECT_NAME}-nginx:latest
         build:
-            context: ./docker/
+            context: ../docker
             args:
                 BUILD_ARGUMENT_ENV: test
-            dockerfile: ./nginx/Dockerfile
+            dockerfile: docker/nginx/Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-nginx
         restart: always
         ports:
@@ -22,13 +22,13 @@ services:
     laravel: &laravel-template
         image: ${COMPOSE_PROJECT_NAME}-laravel:latest
         build:
-            context: .
+            context: ..
             args:
                 BUILD_ARGUMENT_ENV: test
                 HOST_UID: ${HOST_UID}
                 HOST_GID: ${HOST_GID}
                 XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-            dockerfile: ./Dockerfile
+            dockerfile: ../Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-laravel
         volumes:
             - ./.git:/var/www/html/.git:cached
@@ -82,8 +82,8 @@ services:
     scrapy:
       image: 'badouralix/python-scrapy:latest'
       build:
-        context: .
-        dockerfile: ./docker/scrapy/Dockerfile
+        context: ..
+        dockerfile: docker/scrapy/Dockerfile
       container_name: ${COMPOSE_PROJECT_NAME}-scrapy
       networks:
         - laravel
