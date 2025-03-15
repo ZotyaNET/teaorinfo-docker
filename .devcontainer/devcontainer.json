@@ -2,7 +2,7 @@
   "name": "Laravel Dev Container",
   "dockerFile": "../Dockerfile",
   "remoteUser": "vscode",
-  "runArgs": ["--memory=4gb", "--cpus=2", '--network=bridge'],
+  "runArgs": ["--memory=8gb", "--cpus=4", '--network=bridge'],
   "workspaceFolder": "/workspace/teaorinfo-docker",
   "forwardPorts": [
     8000, 3306, 5173, 80, 443, 6379, 1025, 8025, 3000, 27017
