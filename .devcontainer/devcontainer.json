@@ -2,7 +2,7 @@
   "name": "Remote Dev Container",
   "dockerFile": "Dockerfile",
   "remoteUser": "www-data",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces",
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
   ],
