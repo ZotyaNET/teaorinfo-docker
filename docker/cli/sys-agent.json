@@ -1,0 +1,6 @@
+[
+  { "command": "collect -c 1", "frequency": "5s" },
+  { "command": "docker stats --no-stream --format json1", "frequency": "5s" },
+  { "command": "df -h", "frequency": "5s" },
+  { "command": "netstat -i", "frequency": "5s" }
+]

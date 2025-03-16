@@ -1,0 +1,12 @@
+[Unit]
+Description=System Stats Collector
+After=network.target
+
+[Service]
+ExecStart=/var/www/html/docker/cli/connect-agent.sh
+Restart=always
+User=root
+WorkingDirectory=/var/www/html/docker/cli
+
+[Install]
+WantedBy=multi-user.target
