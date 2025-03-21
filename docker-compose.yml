@@ -13,7 +13,7 @@ services:
             - "${WEB_PORT_HTTP}:80"
             - "${WEB_PORT_SSL}:443"
         volumes:
-            - ./laravel:/var/www/html:rw,cached
+            - ./:/var/www/html:rw,cached
         depends_on:
             - laravel
         networks:
@@ -39,7 +39,7 @@ services:
             dockerfile: ./Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-laravel
         volumes:
-            - ./laravel:/var/www/html:cached
+            - ./:/var/www/html:cached
         depends_on:
             - mysql
             - mail
