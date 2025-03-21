@@ -1,0 +1,387 @@
+services:
+
+    nginx:
+        image: ${COMPOSE_PROJECT_NAME}-nginx:latest
+        build:
+            context: .docker/
+            args:
+                BUILD_ARGUMENT_ENV: dev
+            dockerfile: ./nginx/Dockerfile
+        container_name: ${COMPOSE_PROJECT_NAME}-nginx
+        restart: always
+        ports:
+            - "${WEB_PORT_HTTP}:80"
+            - "${WEB_PORT_SSL}:443"
+        volumes:
+            - ./laravel:/var/www/html:rw,cached
+        depends_on:
+            - laravel
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    laravel: &laravel-template
+        image: ${COMPOSE_PROJECT_NAME}-laravel:latest
+        build:
+            context: .
+            args:
+                BUILD_ARGUMENT_ENV: dev
+                HOST_UID: ${HOST_UID}
+                HOST_GID: ${HOST_GID}
+                XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+            dockerfile: ./Dockerfile
+        container_name: ${COMPOSE_PROJECT_NAME}-laravel
+        volumes:
+            - ./laravel:/var/www/html:cached
+        depends_on:
+            - mysql
+            - mail
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    ### Cron tasks
+    supervisord:
+        <<: *laravel-template
+        container_name: ${COMPOSE_PROJECT_NAME}-supervisord
+        expose: [ ]
+        command: [ "/usr/bin/supervisord" ]
+
+    mysql:
+        image: mysql:${MYSQL_VERSION}
+        container_name: ${COMPOSE_PROJECT_NAME}-mysql
+        command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        ports:
+            - "${DB_PORT}:${DB_PORT}"
+        volumes:
+            - ./.storage/mysql-dev-data:/var/lib/mysql:delegated
+            - ./.docker/dev/init-db.sql:/.docker-entrypoint-initdb.d/init-db.sql
+        networks:
+            - laravel
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - '-p${DB_PASSWORD}'
+            retries: 3
+            timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    redis:
+        image: 'redis:alpine'
+        container_name: ${COMPOSE_PROJECT_NAME}-redis
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        volumes:
+            - ./.storage/redis-dev-data:/data
+        networks:
+            - laravel
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
+        depends_on:
+            - mysql
+            - mail
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    mail:
+        image: axllent/mailpit:latest
+        container_name: ${COMPOSE_PROJECT_NAME}-mail
+        restart: always
+        ports:
+            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    chrome:
+        image: 'browserless/chrome:latest'
+        container_name: ${COMPOSE_PROJECT_NAME}-chrome
+        ports:
+            - '3000:3000'
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    scrapy:
+        image: 'badouralix/python-scrapy:latest'
+        build:
+            context: .
+            dockerfile: .docker/scrapy/Dockerfile
+        container_name: ${COMPOSE_PROJECT_NAME}-scrapy
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    mongodb:
+        image: mongo:latest
+        container_name: ${COMPOSE_PROJECT_NAME}-mongodb
+        ports:
+            - "${MONGO_PORT:-27017}:27017"
+        volumes:
+            - ./.storage/mongo-dev-data:/data/db
+        networks:
+            - laravel
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    pgsql:
+        image: 'postgres:latest'
+        container_name: ${COMPOSE_PROJECT_NAME}-postgres
+        ports:
+            - '${FORWARD_DB_PORT:-5432}:5432'
+        environment:
+            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        volumes:
+            - './.storage/pgsql-dev-data:/var/lib/postgresql/data'
+            - './.docker/database/pgsql/create-testing-database.sql:/.docker-entrypoint-initdb.d/10-create-testing-database.sql'
+        networks:
+            - laravel
+        healthcheck:
+            test:
+                - CMD
+                - pg_isready
+                - '-q'
+                - '-d'
+                - '${DB_DATABASE}'
+                - '-U'
+                - '${DB_USERNAME}'
+            retries: 3
+            timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    mariadb:
+        image: 'mariadb:latest'
+        container_name: ${COMPOSE_PROJECT_NAME}-mariadb
+        ports:
+            - '33060:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - './.storage/mariadb-dev-data:/var/lib/mysql'
+            - './.docker/database/mariadb/create-testing-database.sh:/.docker-entrypoint-initdb.d/10-create-testing-database.sh'
+        networks:
+            - laravel
+        healthcheck:
+            test:
+                - CMD
+                - healthcheck.sh
+                - '--connect'
+                - '--innodb_initialized'
+            retries: 3
+            timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    memcached:
+        image: 'memcached:alpine'
+        container_name: ${COMPOSE_PROJECT_NAME}-memcached
+        ports:
+            - '${FORWARD_MEMCACHED_PORT:-11211}:11211'
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    typesense:
+        image: 'typesense/typesense:27.1'
+        container_name: ${COMPOSE_PROJECT_NAME}-typesense
+        ports:
+            - '${FORWARD_TYPESENSE_PORT:-8108}:8108'
+        environment:
+            TYPESENSE_DATA_DIR: '${TYPESENSE_DATA_DIR:-/typesense-data}'
+            TYPESENSE_API_KEY: '${TYPESENSE_API_KEY:-xyz}'
+            TYPESENSE_ENABLE_CORS: '${TYPESENSE_ENABLE_CORS:-true}'
+        volumes:
+            - './.storage/typesense-dev-data:/typesense-data'
+        networks:
+            - laravel
+        healthcheck:
+            test:
+                - CMD
+                - wget
+                - '--no-verbose'
+                - '--spider'
+                - 'http://localhost:8108/health'
+            retries: 5
+            timeout: 7s
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    minio:
+        image: 'minio/minio:latest'
+        container_name: ${COMPOSE_PROJECT_NAME}-minio
+        ports:
+            - '${FORWARD_MINIO_PORT:-9000}:9000'
+            - '${FORWARD_MINIO_CONSOLE_PORT:-8900}:8900'
+        environment:
+            MINIO_ROOT_USER: sail
+            MINIO_ROOT_PASSWORD: password
+        volumes:
+            - './.storage/minio-dev-data:/data'
+        networks:
+            - laravel
+        command: 'minio server /data --console-address ":8900"'
+        healthcheck:
+            test:
+                - CMD
+                - mc
+                - ready
+                - local
+            retries: 3
+            timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    selenium:
+        image: selenium/standalone-chromium
+        container_name: ${COMPOSE_PROJECT_NAME}-selenium
+        extra_hosts:
+            - 'host..docker.internal:host-gateway'
+        volumes:
+            - '/dev/shm:/dev/shm'
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+    soketi:
+        image: 'quay.io/soketi/soketi:latest-16-alpine'
+        container_name: ${COMPOSE_PROJECT_NAME}-soketi
+        environment:
+            SOKETI_DEBUG: '${SOKETI_DEBUG:-1}'
+            SOKETI_METRICS_SERVER_PORT: '9601'
+            SOKETI_DEFAULT_APP_ID: '${PUSHER_APP_ID}'
+            SOKETI_DEFAULT_APP_KEY: '${PUSHER_APP_KEY}'
+            SOKETI_DEFAULT_APP_SECRET: '${PUSHER_APP_SECRET}'
+        ports:
+            - '${PUSHER_PORT:-6001}:6001'
+            - '${PUSHER_METRICS_PORT:-9601}:9601'
+        networks:
+            - laravel
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 1G
+                reservations:
+                    cpus: '0.05'
+                    memory: 100M
+
+networks:
+    laravel:
+        name: laravel

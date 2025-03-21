@@ -37,9 +37,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       cron \
       sudo \
       libzip-dev \
-    && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-install \
+    && .docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
+    && .docker-php-ext-configure intl \
+    && .docker-php-ext-install \
       pdo_mysql \
       sockets \
       pcntl \
@@ -48,7 +48,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       opcache \
       zip \
     && pecl install mongodb \
-    && docker-php-ext-enable mongodb \
+    && .docker-php-ext-enable mongodb \
     && rm -rf /tmp/* \
     && rm -rf /var/list/apt/* \
     && rm -rf /var/lib/apt/lists/* \
@@ -62,12 +62,12 @@ RUN mkdir -p $APP_HOME/public && \
     && chown -R ${USERNAME}:${USERNAME} $APP_HOME
 
 # put php config for Laravel
-COPY ./docker/$BUILD_ARGUMENT_ENV/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY ./docker/$BUILD_ARGUMENT_ENV/php.ini /usr/local/etc/php/php.ini
+COPY .docker/$BUILD_ARGUMENT_ENV/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY .docker/$BUILD_ARGUMENT_ENV/php.ini /usr/local/etc/php/php.ini
 
 # install Xdebug in case dev/test environment
-COPY ./docker/general/do_we_need_xdebug.sh /tmp/
-COPY ./docker/dev/xdebug-${XDEBUG_CONFIG}.ini /tmp/xdebug.ini
+COPY .docker/general/do_we_need_xdebug.sh /tmp/
+COPY .docker/dev/xdebug-${XDEBUG_CONFIG}.ini /tmp/xdebug.ini
 RUN chmod u+x /tmp/do_we_need_xdebug.sh && /tmp/do_we_need_xdebug.sh
 
 # copy source files and config files
@@ -76,14 +76,14 @@ COPY --chown=${USERNAME}:${USERNAME} ./.env.$ENV $APP_HOME/.env
 
 # add supervisor
 RUN mkdir -p /var/log/supervisor
-COPY --chown=root:root ./docker/general/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY --chown=root:crontab ./docker/general/cron /var/spool/cron/crontabs/root
+COPY --chown=root:root .docker/general/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --chown=root:crontab .docker/general/cron /var/spool/cron/crontabs/root
 RUN chmod 0600 /var/spool/cron/crontabs/root
 
 # Install the Redis extension using pecl
 RUN pecl install redis \
 # enable it using ext
-    && docker-php-ext-enable redis
+    && .docker-php-ext-enable redis
 
 # install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

@@ -3,10 +3,10 @@ services:
     nginx:
         image: ${COMPOSE_PROJECT_NAME}-nginx:latest
         build:
-            context: ../docker
+            context: ../.docker
             args:
                 BUILD_ARGUMENT_ENV: prod
-            dockerfile: docker/nginx/Dockerfile
+            dockerfile: .docker/nginx/Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-nginx
         restart: always
         ports:

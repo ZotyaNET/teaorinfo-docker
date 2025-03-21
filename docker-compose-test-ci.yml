@@ -3,10 +3,10 @@ services:
     nginx:
         image: ${COMPOSE_PROJECT_NAME}-nginx:latest
         build:
-            context: ../docker
+            context: ../.docker
             args:
                 BUILD_ARGUMENT_ENV: test
-            dockerfile: docker/nginx/Dockerfile
+            dockerfile: .docker/nginx/Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-nginx
         restart: always
         ports:
@@ -57,7 +57,7 @@ services:
             - "3306:3306"
         volumes:
             - ./storage/mysql-test-data:/var/lib/mysql:delegated
-            - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+            - ./.docker/dev/init-db.sql:/.docker-entrypoint-initdb.d/init-db.sql
         networks:
             - laravel
 
@@ -83,7 +83,7 @@ services:
       image: 'badouralix/python-scrapy:latest'
       build:
         context: ..
-        dockerfile: docker/scrapy/Dockerfile
+        dockerfile: .docker/scrapy/Dockerfile
       container_name: ${COMPOSE_PROJECT_NAME}-scrapy
       networks:
         - laravel
