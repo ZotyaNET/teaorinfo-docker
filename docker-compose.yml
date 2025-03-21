@@ -41,18 +41,18 @@ services:
         volumes:
             - ./:/var/www/html:cached
         depends_on:
-            - mariadb
+            - mysql
             - mail
         networks:
             - laravel
         deploy:
             resources:
                 limits:
-                    cpus: '0.5'
-                    memory: 1G
+                    cpus: '2'
+                    memory: 4G
                 reservations:
-                    cpus: '0.05'
-                    memory: 100M
+                    cpus: '1'
+                    memory: 2G
 
     ### Cron tasks
     supervisord:
@@ -78,7 +78,7 @@ services:
             retries: 3
             timeout: 5s
         depends_on:
-            - mariadb
+            - mysql
             - mail
         deploy:
             resources:
@@ -107,29 +107,28 @@ services:
                     cpus: '0.05'
                     memory: 100M
 
-    mariadb:
-        image: 'mariadb:latest'
-        container_name: ${COMPOSE_PROJECT_NAME}-mariadb
-        ports:
-            - '33060:3306'
+    mysql:
+        image: mysql:${MYSQL_VERSION}
+        container_name: ${COMPOSE_PROJECT_NAME}-mysql
+        command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
             MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        ports:
+            - "${DB_PORT}:${DB_PORT}"
         volumes:
-            - './.storage/mariadb-dev-data:/var/lib/mysql'
-            - './docker/database/mariadb/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - ./.storage/mysql-dev-data:/var/lib/mysql:delegated
+            - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
         networks:
             - laravel
         healthcheck:
             test:
                 - CMD
-                - healthcheck.sh
-                - '--connect'
-                - '--innodb_initialized'
+                - mysqladmin
+                - ping
+                - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
         deploy:
